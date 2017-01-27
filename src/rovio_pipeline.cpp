@@ -85,23 +85,23 @@ void idleFunc(){
 int main(int argc, char** argv){
   
   
-  std::string datasetConfig = "../datasetConfig.yaml";
+ 
 
-  std::string filter_config = "../cfg/rovio.info";
+  std::string filter_config = "./cfg/rovio.info";
   // Filter
   std::shared_ptr<mtFilter> mpFilter(new mtFilter);
   mpFilter->readFromInfo(filter_config);
 
-  std::string camera_config = "../cfg/euroc_cam0.yaml";
+  std::string camera_config = "./cfg/euroc_cam0.yaml";
   mpFilter->cameraCalibrationFile_[0] = camera_config;
   mpFilter->refreshProperties();
   
-  rovio::RovioNode_noros<mtFilter> rovioNode(mpFilter,datasetConfig);
+  rovio::RovioNode_noros<mtFilter> rovioNode(argc,argv,mpFilter);
   
   #ifdef MAKE_SCENE
   // Scene
-  std::string mVSFileName = "../shaders/shader.vs";
-  std::string mFSFileName = "../shaders/shader.fs";
+  std::string mVSFileName = "./shaders/shader.vs";
+  std::string mFSFileName = "./shaders/shader.fs";
   mRovioScene.initScene(argc,argv,mVSFileName,mFSFileName,mpFilter);
   mRovioScene.setIdleFunction(idleFunc);
   //mRovioScene.addKeyboardCB('r',[&rovioNode]() mutable {rovioNode.requestReset();});

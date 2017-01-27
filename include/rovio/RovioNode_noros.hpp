@@ -36,6 +36,7 @@
 #include <rovio/Struct_definition.hpp>
 
 #include <iostream>
+#include <sstream>
 #include "rovio/RovioFilter.hpp"
 #include "rovio/CoordinateTransform/RovioOutput.hpp"
 #include "rovio/CoordinateTransform/FeatureOutput.hpp"
@@ -137,12 +138,13 @@ class RovioNode_noros{
   
   
   std::thread consumerThread_;
-  std::string datasetConfig_;
-
+  int argc_;
+  char** argv_;
+ 
   /** \brief Constructor
    */
-  RovioNode_noros(std::shared_ptr<mtFilter> mpFilter,std::string datasetConfig)
-      : mpFilter_(mpFilter), datasetConfig_(datasetConfig),transformFeatureOutputCT_(&mpFilter->multiCamera_), landmarkOutputImuCT_(&mpFilter->multiCamera_),
+  RovioNode_noros(int argc, char** argv,std::shared_ptr<mtFilter> mpFilter )
+      : argc_(argc),argv_(argv),mpFilter_(mpFilter), transformFeatureOutputCT_(&mpFilter->multiCamera_), landmarkOutputImuCT_(&mpFilter->multiCamera_),
         cameraOutputCov_((int)(mtOutput::D_),(int)(mtOutput::D_)), featureOutputCov_((int)(FeatureOutput::D_),(int)(FeatureOutput::D_)), landmarkOutputCov_(3,3),
         featureOutputReadableCov_((int)(FeatureOutputReadable::D_),(int)(FeatureOutputReadable::D_)){
     #ifndef NDEBUG
@@ -306,26 +308,11 @@ class RovioNode_noros{
   void Loop()
   {
     
-      /*
-      cv::FileStorage fs(datasetConfig_,cv::FileStorage::READ);
-      
-       if (!fs.isOpened())
-      {
-	std::cout << "failed to open " << datasetConfig_ << endl;
-	
-	return ;
-      }
-      */
+     
     
-      std::string datasetBase = "/home/pang/dataset/mav_cam_imu/MH_01_easy/mav0/";
+      std::string datasetBase = std::string(argv_[1]);
       
-      /*
-      fs["datasetBase"]>> datasetBase;
-      fs["imageStart"] >> imageStart;
-      fs["imageEnd"] >> imageEnd;
-      */
-      
-      
+  
       
       std::string imgBasePath = datasetBase + "cam0/data/";
       std::string strTimeStampFile = datasetBase + "cam0/data.txt";
@@ -356,8 +343,21 @@ class RovioNode_noros{
       imuFile.close();
       //std::cout<<imuList.at(0).imudata.a<<std::endl;
       
-      unsigned int imageStart = 0;
-      unsigned int imageEnd = imageList.size();
+      unsigned int imageStart ;
+      unsigned int imageEnd ;
+      
+      std::string s = std::string(argv_[2]);
+      std::stringstream ss;
+      ss<<s;
+      ss>>imageStart;
+      
+      std::string s1 = std::string(argv_[3]);
+      std::stringstream ss1;
+      ss1<<s1; 
+      ss1>>imageEnd;
+      
+     
+      
 	
       double image_t =  imageList.at(imageStart).imageTimeStamp;
       unsigned int imuStart= 0;	
