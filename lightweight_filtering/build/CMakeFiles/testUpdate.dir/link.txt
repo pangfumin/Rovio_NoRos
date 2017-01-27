@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/testUpdate.dir/src/testUpdate.cpp.o  -o testUpdate -rdynamic gtest/libgtest_main.a gtest/libgtest.a -lpthread -lpthread 

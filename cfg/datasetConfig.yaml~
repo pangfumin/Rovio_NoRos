@@ -1,0 +1,4 @@
+%YAML:1.0
+datasetBase:"/home/pang/dataset/mav_cam_imu/MH_01_easy/mav0/"
+imageStart: 900
+imageEnd:3000

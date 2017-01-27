@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/testSigmaPoints.dir/src/testSigmaPoints.cpp.o  -o testSigmaPoints -rdynamic gtest/libgtest_main.a gtest/libgtest.a -lpthread -lpthread 

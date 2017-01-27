@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/testGIFPrediction.dir/src/testGIFPrediction.cpp.o  -o testGIFPrediction -rdynamic gtest/libgtest_main.a gtest/libgtest.a -lpthread -lpthread 
