@@ -32,22 +32,6 @@ typedef Eigen::Matrix<double, 16, 16> Matrix16;
 
 typedef Eigen::Matrix<double,4,1> quaternion;
 
-//#define DEBUG
-
-//#define DEBUG1
-
-//#define OUTPUT
-
-
-
-#define DATA_B
-
-//#define DATA_BB
-
-#define DATA_BF
-
-//#define DATA_A
-
 
 
 struct Feature
@@ -390,12 +374,6 @@ struct Camstate{
 
 };
 
-
-
-
-
-
-
 struct FeatureTrack
 
 {
@@ -436,8 +414,6 @@ struct FeatureTrack
 
 	}
 
-
-
 	FeatureTrack(){
 
 		featureID = 0;
@@ -459,7 +435,6 @@ struct FeatureTrack
 struct StateVector
 
 {
-
 	/* -------- Structure of Complete State Vector -------- */
 
 	IMUstate imuState;
@@ -468,23 +443,15 @@ struct StateVector
 
 	Eigen::Matrix<double, 16, 16> imuCovariance; // imu + calib
 
-	
-
 	Eigen::MatrixXd bodyCovariance;
 
 	Eigen::MatrixXd imuBodyCovariance;
 
-
-
 	std::vector<Bodystate, Eigen::aligned_allocator<Bodystate>> bodyStateBuffer;
-
-
 
 	//CalibrationParameter camCalibState;
 
 	//Eigen::MatrixXd camCalibCovariance;
-
-
 
 	/* -------- Operator to copy structure members -------- */
 
@@ -528,10 +495,6 @@ struct StateVector
 
 };
 
-
-
-
-
 struct ImageNameStruct{
 
 	std::string imageName;
@@ -539,49 +502,32 @@ struct ImageNameStruct{
 	double imageTimeStamp;
 
 };
-
-
-
 typedef struct IMUMeanData_{
 
 	double gx_mean;
-
 	double gy_mean;
-
 	double gz_mean;
 
 	double ax_mean;
-
 	double ay_mean;
-
 	double az_mean;
 
 }IMUMeanData;
 
-
-
 void getParameter(std::string cameParam,std::string imuParam,cameraParameters & camParam,	noiseParameters & initNoiseParam);
-
-
 
 std::vector<ImageNameStruct> getImageList( std::ifstream& imageListFile);
 
 std::vector<StampedIMUData> getIMUReading(std::ifstream& IMURecordFile);
+std::vector<StampedIMUData> getIMUReadingEuroc(std::ifstream& IMURecordFile);
 
 std::vector<StampedIMUData> getIMUReadingDvt(std::ifstream& IMURecordFile);
 
-
-
-
-
 std::vector<ImageNameStruct> getImageListDvt( std::ifstream& imageListFile);
-
-
 
 std::vector<StampedAccData> getAccReading(std::ifstream & AccRecordFile);
 
-
-
 std::vector<StampedGyroData> getGyroReading(std::ifstream & gyroRecordFile);
+std::vector<IMUGroundTruth> getGroundTruthEuroc(std::ifstream & groundTruthFile);
 
 #endif

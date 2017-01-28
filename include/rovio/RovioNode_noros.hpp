@@ -307,9 +307,7 @@ class RovioNode_noros{
   
   void Loop()
   {
-    
-     
-    
+       
       std::string datasetBase = std::string(argv_[1]);
       
   
@@ -317,31 +315,26 @@ class RovioNode_noros{
       std::string imgBasePath = datasetBase + "cam0/data/";
       std::string strTimeStampFile = datasetBase + "cam0/data.txt";
       std::string strImuFile = datasetBase + "imu0/data.txt";
-      
+      std::string strGroundTruthFile = datasetBase + "state_groundtruth_estimate0/data.txt";
       std::ifstream timestampfile(strTimeStampFile);
       std::vector<ImageNameStruct> imageList = getImageList(timestampfile);
       timestampfile.close();
       
-      std::string  line;
-      double timeStamp;
-      IMUdata data;
+     
       
       std::ifstream imuFile(strImuFile);
       std::vector<StampedIMUData> imuList;
-      while (std::getline(imuFile, line))
-
-      {  
-	      StampedIMUData tmp;
-	      std::sscanf(line.c_str(), "%lf,%lf,%lf,%lf,%lf,%lf,%lf", &timeStamp, 
-		    &data.g.x(), &data.g.y(), &data.g.z(),
-		    &data.a.x(), &data.a.y(), &data.a.z());
-	      tmp.timestamp = timeStamp * 1e-9;
-	      tmp.imudata = data;
-	      imuList.push_back(tmp);
-
-      }
+      imuList = getIMUReadingEuroc(imuFile);
       imuFile.close();
       //std::cout<<imuList.at(0).imudata.a<<std::endl;
+      
+      
+      // groundtruth
+      std::ifstream groundTruthFile(strGroundTruthFile);
+      std::vector<IMUGroundTruth> groundTruthList;
+      groundTruthList = getGroundTruthEuroc(groundTruthFile);
+      groundTruthFile.close();
+      std::cout<<groundTruthList.size()<<std::endl;
       
       unsigned int imageStart ;
       unsigned int imageEnd ;
@@ -361,23 +354,30 @@ class RovioNode_noros{
 	
       double image_t =  imageList.at(imageStart).imageTimeStamp;
       unsigned int imuStart= 0;	
+      unsigned int groundTruthStart = 0;
 
-      for (size_t i = 0; i < imuList.size(); i++)
-      {		
-	      if (imuList.at(i).timestamp > image_t)
-	      {
-		      imuStart = i;
-		      break;
-	      }
-      }
-      //std::cout<<"imuStart: "<<imuStart<<std::endl;
+      for (size_t i = 0; i < imuList.size() && imuList.at(i).timestamp < image_t; i++)
+	imuStart = i;
+    
+		   
+      std::cout<<"imuStart: "<<imuStart<<std::endl;
+      std::cout<<"groundTruthStart: "<<groundTruthStart<<std::endl;
       
       unsigned int imuCnt  = imuStart;
+      unsigned int groundTruthCnt = groundTruthStart;
       for (unsigned int imageCnt = imageStart+1; imageCnt < imageEnd; imageCnt ++)
       {
+	while( groundTruthList.at(groundTruthCnt).timeStamp < imageList.at(imageCnt).imageTimeStamp )
+	    groundTruthCnt ++;
+	
+	
+	
+	
 	while(imuList.at(imuCnt).timestamp < imageList.at(imageCnt).imageTimeStamp)
 	{
+	 
 	  imuCallback(imuList.at(imuCnt));
+	 
 	  imuCnt ++;
 	  cv::waitKey(3);
 	}

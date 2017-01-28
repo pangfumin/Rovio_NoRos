@@ -213,16 +213,8 @@ std::vector<ImageNameStruct> getImageListDvt( std::ifstream& imageListFile)
 	while(std::getline(imageListFile,line)&& !line.empty())
 
 	{
-
-
-
-		std::istringstream iss(line);
-
-
-
+        	std::istringstream iss(line);
 		iss >> filename >> timestamp;
-
-
 
 		//std::cout<< timestamp<<" "<<filename<<std::endl;
 
@@ -240,10 +232,6 @@ std::vector<ImageNameStruct> getImageListDvt( std::ifstream& imageListFile)
 
 		imageNameList.push_back(imageNameStruct);
 
-			
-
-	
-
 	}
 
 	return imageNameList;
@@ -257,23 +245,12 @@ std::vector<StampedIMUData> getIMUReading(std::ifstream& IMURecordFile)
 {
 
 
-
-	
-
 	std::string gx;
-
 	std::string gy;
-
 	std::string gz;
-
 	std::string ax;
-
 	std::string ay;
-
 	std::string az;
-
-
-
 	std::string line;
 
 	std::string timestamp;
@@ -284,12 +261,7 @@ std::vector<StampedIMUData> getIMUReading(std::ifstream& IMURecordFile)
 
 	{
 
-
-
 		std::istringstream iss(line); 
-
-		
-
 		iss>>timestamp>>ax>>ay>>az>>gx>>gy>>gz;
 
 		double time = std::stod(timestamp);
@@ -308,17 +280,7 @@ std::vector<StampedIMUData> getIMUReading(std::ifstream& IMURecordFile)
 
 		imuReadingStruct.imudata.g<<stod(gx),stod(gy),stod(gz);
 
-
-
-		
-
-
-
 		imuReadingList.push_back(imuReadingStruct);
-
-			
-
-	
 
 	}
 
@@ -328,8 +290,29 @@ std::vector<StampedIMUData> getIMUReading(std::ifstream& IMURecordFile)
 
 }
 
+std::vector<StampedIMUData> getIMUReadingEuroc(std::ifstream& IMURecordFile)
 
+{
+      std::vector<StampedIMUData> imuList;
+      std::string  line;
+      double timeStamp;
+      IMUdata data;
+      while (std::getline(IMURecordFile, line))
 
+      {  
+	      StampedIMUData tmp;
+	      std::sscanf(line.c_str(), "%lf,%lf,%lf,%lf,%lf,%lf,%lf", &timeStamp, 
+		    &data.g.x(), &data.g.y(), &data.g.z(),
+		    &data.a.x(), &data.a.y(), &data.a.z());
+	      tmp.timestamp = timeStamp * 1e-9;
+	      tmp.imudata = data;
+	      imuList.push_back(tmp);
+
+      }
+      
+      return imuList;
+      
+}
 
 
 
@@ -366,13 +349,9 @@ std::vector<StampedIMUData> getIMUReadingDvt(std::ifstream& IMURecordFile)
 
 	{
 
-
-
-
-
 		std::istringstream iss(line); 
 
-        std::getline(iss, timestamp, ',');
+                std::getline(iss, timestamp, ',');
 
 		
 
@@ -574,5 +553,36 @@ std::vector<StampedGyroData> getGyroReading(std::ifstream & gyroRecordFile)
 
 }
 
+
+std::vector<IMUGroundTruth> getGroundTruthEuroc(std::ifstream & groundTruthFile)
+{
+  std::string line;
+  std::vector<IMUGroundTruth> GroundTruth;
+  IMUGroundTruth imuGroudTruth;
+  double ts;
+  while(std::getline(groundTruthFile, line))
+
+  {
+
+    std::sscanf(line.c_str(), "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf", 
+
+	    &ts, &imuGroudTruth.p_b_G.x(), &imuGroudTruth.p_b_G.y(), &imuGroudTruth.p_b_G.z(),
+
+	    &imuGroudTruth.q_B_G(3), &imuGroudTruth.q_B_G(0),&imuGroudTruth.q_B_G(1), &imuGroudTruth.q_B_G(2),
+
+	    &imuGroudTruth.v_b_G.x(), &imuGroudTruth.v_b_G.y(), &imuGroudTruth.v_b_G.z(),
+
+	    &imuGroudTruth.bias_w(0), &imuGroudTruth.bias_w(1), &imuGroudTruth.bias_w(2),
+
+	    &imuGroudTruth.bias_a(0), &imuGroudTruth.bias_a(1), &imuGroudTruth.bias_a(2));
+
+    imuGroudTruth.timeStamp = ts * 1e-9;
+
+    GroundTruth.push_back(imuGroudTruth);
+
+  }
+  return GroundTruth;
+
+}
 
 
